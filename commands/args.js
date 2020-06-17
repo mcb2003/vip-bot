@@ -30,9 +30,9 @@ module.exports = class extends Command {
     usage = '<your arguments here>';
     help = "Provide this command with any arguments you wish, and it will return the parsed representation of your arguments.";
     execute(message, args) {
-        let reply = "**Passed Arguments:**\n\n";
+        let reply = "**Passed Arguments:**\n";
         for(let k in args) {
-            reply += `**${k}:**\t${args[k]}\n`;
+            reply += `\n**${k}:**\t${args[k]}`;
         }
         return message.reply(reply);
     }
