@@ -14,20 +14,30 @@ module.exports = class {
         const args = yargsParser(rawArgs, this.argConfig);
         // If the user wants help, display it
         if(args.help) {
-            return this.sendHelp(message);
+            return message.channel.send(this.helpString);
+        }
+        // Check for and inforce positional argument requirements
+        if(this.nPosArgs && this.nPosArgs !== args._.length) {
+            return message.reply(`You must provide exactly ${this.nPosArgs} positional arguments (${args._.length} given).
+                \n${this.usageString}`);
         }
         // Future checking (E.G. guild only, user / channel perms, cool-down, etc)
         this.execute(message, args);
     }
     
-    sendHelp(message) {
-        let reply = `**${this.name}:** ${this.description}`;
-            reply += `\n**Usage:** ${this.globalConfig.prefix}${this.name.toLowerCase()} ${this.usage}`;
+    get usageString() {
+// If no usage, the space is trimmed
+            return `**Usage:** ${this.globalConfig.prefix}${this.name.toLowerCase()} ${this.usage}`.trim();
+    }
+    
+    get helpString() {
+        let helpText = `**${this.name}:** ${this.description}
+        \n${this.usageString}`;
         if(this.help) {
-            reply += '\n' + this.help;
+            helpText += '\n' + this.help;
         } else {
-            reply += "\nThis command doesn't provide any further help documentation.";
+            helpText += "\nThis command doesn't provide any further help documentation.";
         }
-        return message.channel.send(reply);
+        return helpText;
     }
 };
