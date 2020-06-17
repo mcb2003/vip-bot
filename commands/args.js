@@ -22,7 +22,7 @@
     SOFTWARE.
 */
 
-const Command = require('../command');
+const { Command } = require('../command');
 
 module.exports = class extends Command {
     name = 'argtest';
