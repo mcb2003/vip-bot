@@ -11,7 +11,7 @@ const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('
 for(const file of commandFiles) {
     console.info(`Found command file: ${file}`);
     const command = require('./commands/' + file);
-    client.commands.set(command.name, command);
+    client.commands.set(command.name.toLowerCase(), command);
     console.info(`Loaded command: ${command.name} - ${command.description}`);
 }
 
@@ -23,7 +23,7 @@ client.on('message', message => {
     if(!message.content.startsWith(config.prefix) || message.author.bot) return;
     const args = message.content.slice(config.prefix.length)
                 .split(/[ \t\n]+/); // Might add quoting rules later
-    const command = args.shift();
+    const command = args.shift().toLowerCase();
     if(client.commands.has(command)) {
         try {
             return client.commands.get(command).execute(message);
