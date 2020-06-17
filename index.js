@@ -20,14 +20,19 @@ client.once('ready', () => {
 });
 
 client.on('message', message => {
-    console.log(`Recieved message: ${message.content}\nParsing command\nBot:\t${message.author.bot}`);
-    const args = message.content.split(/[ \t\n]+/); // Might add quoting rules later
+    if(!message.content.startsWith(config.prefix) || message.author.bot) return;
+    const args = message.content.slice(config.prefix.length)
+                .split(/[ \t\n]+/); // Might add quoting rules later
     const command = args.shift();
-    console.log(`Command:\t${command}\nArgs:\t${args}`);
-    try {
-        return client.commands.get(command).execute(message);
-    } catch(e) {
-        return message.reply(`Sorry, there was an error running that command:\n${e.name}: ${e.message}`);
+    if(client.commands.has(command)) {
+        try {
+            return client.commands.get(command).execute(message);
+        } catch(e) {
+            return message.reply(`Sorry, there was an error running that command:\n${e.name}: ${e.message}`);
+            console.error(error);
+        }
+    } else if(config.replyCNF) { // reply on command not found
+        return message.reply(`That command doesn't exist. Type "${config.prefix}help" to get a list of commands.`);
     }
 });
 
