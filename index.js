@@ -1,6 +1,5 @@
 const fs = require('fs');
 const Discord = require('discord.js');
-const yargsParser = require('yargs-parser');
 const config = require('./config'); // Bot config
 
 const client = new Discord.Client();
@@ -11,7 +10,8 @@ client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 for(const file of commandFiles) {
     console.info(`Found command file: ${file}`);
-    const command = require('./commands/' + file);
+    const CommandClass = require('./commands/' + file);
+    const command = new CommandClass(config);
     client.commands.set(command.name.toLowerCase(), command);
     console.info(`Loaded command: ${command.name} - ${command.description}`);
 }
@@ -28,10 +28,8 @@ client.on('message', message => {
     const commandName = rawArgs.shift().toLowerCase();
     if(client.commands.has(commandName)) {
         const command = client.commands.get(commandName);
-        // Parse the command's arguments
-        const args = yargsParser(rawArgs);
         try {
-            return command.execute(message, args);
+            return command.run(message, rawArgs);
         } catch(e) {
             return message.reply(`Sorry, there was an error running that command:\n${e.name}: ${e.message}`);
             console.error(error);
