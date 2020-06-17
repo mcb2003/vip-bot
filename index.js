@@ -4,6 +4,18 @@ const config = require('./config'); // Bot config
 
 const client = new Discord.Client();
 
+// Default command argument config.
+const defaultArgConfig = {
+    configuration: {
+        'strip-aliased': true,
+        'strip-dashed': true,
+    },
+    alias: {
+        help: ['h']
+    },
+    boolean: ['help']
+};
+
 // Load commands:
 console.info("Loading commands");
 client.commands = new Discord.Collection();
@@ -11,7 +23,7 @@ const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('
 for(const file of commandFiles) {
     console.info(`Found command file: ${file}`);
     const CommandClass = require('./commands/' + file);
-    const command = new CommandClass(config);
+    const command = new CommandClass(config, defaultArgConfig);
     client.commands.set(command.name.toLowerCase(), command);
     console.info(`Loaded command: ${command.name} - ${command.description}`);
 }
