@@ -35,6 +35,10 @@ module.exports = {
         }
 
         run(message, rawArgs) {
+            // Don't run if this command is guild-only and this is a DM
+            if (this.guildOnly && message.channel.type !== 'text') {
+                return message.reply(`The ${this.name} command is server-only.`);
+            }
             // Parse the raw command arguments
             const args = yargsParser(rawArgs, this.argConfig);
             // If the user wants help, display it
