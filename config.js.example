@@ -1,0 +1,5 @@
+module.exports = {
+    prefix: '!',
+    replyCNF: false, // Reply on command not found?
+    token: 'your-token-here'
+}
