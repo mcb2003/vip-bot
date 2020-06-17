@@ -1,5 +1,6 @@
 const fs = require('fs');
 const Discord = require('discord.js');
+const yargsParser = require('yargs-parser');
 const config = require('./config'); // Bot config
 
 const client = new Discord.Client();
@@ -20,13 +21,17 @@ client.once('ready', () => {
 });
 
 client.on('message', message => {
+    // Ignore messages from bots or not directed at us
     if(!message.content.startsWith(config.prefix) || message.author.bot) return;
-    const args = message.content.slice(config.prefix.length)
+    const rawArgs = message.content.slice(config.prefix.length)
                 .split(/[ \t\n]+/); // Might add quoting rules later
-    const command = args.shift().toLowerCase();
-    if(client.commands.has(command)) {
+    const commandName = rawArgs.shift().toLowerCase();
+    if(client.commands.has(commandName)) {
+        const command = client.commands.get(commandName);
+        // Parse the command's arguments
+        const args = yargsParser(rawArgs);
         try {
-            return client.commands.get(command).execute(message);
+            return command.execute(message, args);
         } catch(e) {
             return message.reply(`Sorry, there was an error running that command:\n${e.name}: ${e.message}`);
             console.error(error);
