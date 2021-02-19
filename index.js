@@ -63,13 +63,10 @@ client.on('message', message => {
   const commandName = rawArgs.shift().toLowerCase();
   if (client.commands.has(commandName)) {
     const command = client.commands.get(commandName);
-    try {
-      return command.run(message, rawArgs);
-    } catch (e) {
-      return message.reply(`Sorry, there was an error running that command:\n${
-          e.name}: ${e.message}`);
+    return command.run(message, rawArgs).then(ret => ret).catch(e => {
       console.error(e);
-    }
+      return message.reply("Sorry, that command encountered an error:");
+    });
   } else if (config.replyCNF) { // reply on command not found
     return message.reply(`That command doesn't exist. Type "${
         config.prefix}help" to get a list of commands.`);
