@@ -43,7 +43,7 @@ module.exports = {
         for (const v of argv[k]) {
           val += `• ${v}\n`;
         }
-        reply.addField("Positional Arguments", val);
+        reply.addField(`Positional Arguments (${argv['_'].length})`, val);
       } else {
         reply.addField(k, argv[k], true);
       }
