@@ -22,26 +22,26 @@
    IN THE SOFTWARE.
 */
 
-const {name, version, bugs} = require("./package.json");
-const fs = require('fs');
-const Discord = require('discord.js');
-const config = require('./config'); // Bot config
+const { name, version, bugs } = require("./package.json");
+const fs = require("fs");
+const Discord = require("discord.js");
+const config = require("./config"); // Bot config
 const Yargs = require("yargs");
 
 const client = new Discord.Client();
 const yargs = new Yargs()
-                  .fail(false)
-                  .version(false)
-                  .help()
-                  .recommendCommands()
-                  .scriptName(config.prefix)
-                  .scriptName(config.prefix)
-                  .epilogue(`Report bugs at ${bugs.url}`);
+  .fail(false)
+  .version(false)
+  .help()
+  .recommendCommands()
+  .scriptName(config.prefix)
+  .scriptName(config.prefix)
+  .epilogue(`Report bugs at ${bugs.url}`);
 
 // Load commands:
 console.info("Loading commands");
 yargs.commandDir("commands", {
-  recurse : true,
+  recurse: true,
   visit(cmd, path) {
     console.info(`Found command: ${cmd.command} - ${cmd.describe} in ${path}`);
     if (cmd.disabled) {
@@ -53,7 +53,7 @@ yargs.commandDir("commands", {
 });
 
 // The default command (handles command not found)
-yargs.command('*', false, {}, (argv) => {
+yargs.command("*", false, {}, (argv) => {
   // Handle command not found
   if (config.replyCNF && argv._.length > 0)
     return argv.message.reply(`${argv._[0]}: command not found`);
@@ -61,43 +61,52 @@ yargs.command('*', false, {}, (argv) => {
 });
 
 // Version command
-yargs.command('version', "Get the bot's version", {}, (argv) => {
+yargs.command("version", "Get the bot's version", {}, (argv) => {
   return argv.message.channel.send(`${name} version ${version}`);
 });
 
 // The error handler
 function handleError(err, msg) {
-  console.error(`Error in command: ${msg.content}`)
+  console.error(`Error in command: ${msg.content}`);
   console.error(err);
-  return msg.reply(config.debug ? `Error:\n${err}`
-                                : "Sorry, that command encountered an error.");
+  return msg.reply(
+    config.debug
+      ? `Error:\n${err}`
+      : "Sorry, that command encountered an error."
+  );
 }
 
-client.once('ready',
-            () => { console.info(`Logged in as @${client.user.tag}`); });
+client.once("ready", () => {
+  console.info(`Logged in as @${client.user.tag}`);
+});
 
-client.on('message', async (message) => {
+client.on("message", async (message) => {
   // Ignore messages from bots or not directed at us
-  if (!message.content.startsWith(config.prefix) || message.author.bot)
-    return;
+  if (!message.content.startsWith(config.prefix) || message.author.bot) return;
 
   const rawArgs = message.content.slice(config.prefix.length);
 
   try {
     // Execute the command
-    await yargs.parse(rawArgs, {
-      message,
-      config,
-    },
-                      (err, argv, output) => {
-                        if (output)
-                          // Yargs has output for the user (probably help or an
-                          // argument error)
-                          argv.message.channel.send(output);
-                        if (err) {
-                          handleError(err, message)
-                        }
-                      });
+    yargs.locale(
+      message.author.locale ?? message.guild.preferredLocale ?? "en-US"
+    );
+    await yargs.parse(
+      rawArgs,
+      {
+        message,
+        config,
+      },
+      (err, argv, output) => {
+        if (output)
+          // Yargs has output for the user (probably help or an
+          // argument error)
+          argv.message.channel.send(output);
+        if (err) {
+          handleError(err, message);
+        }
+      }
+    );
   } catch (e) {
     console.error(e);
   }
