@@ -31,3 +31,22 @@ exports.makeHandler = (handler, options) => {
     return handler(argv);
   };
 };
+
+exports.getUserFromMention = (client, mention) => {
+  if (!client || !mention) return;
+  // The id is the first and only match found by the RegEx.
+  const matches = mention.match(/^<@!?(\d+)>$/);
+  if (!matches || matches.length < 2) return;
+  // The first element in the matches array is the entire mention
+  const id = matches[1];
+
+  return client.users.cache.get(id);
+};
+
+exports.getUserFromTag = (client, tag) => {
+  if (!client || !tag) return;
+  return client.users.cache.find((u) => {
+    console.log(u.tag);
+    return u.tag == tag;
+  });
+};

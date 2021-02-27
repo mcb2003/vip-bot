@@ -23,7 +23,11 @@
 */
 
 const { MessageEmbed } = require("discord.js");
-const { makeHandler } = require("../helpers");
+const {
+  makeHandler,
+  getUserFromMention,
+  getUserFromTag,
+} = require("../helpers");
 
 module.exports = {
   command: "userinfo [user]",
@@ -36,13 +40,20 @@ module.exports = {
   },
   handler: makeHandler(
     (argv) => {
-      let user = argv.message.mentions.users.first();
+      let user;
+      if (argv.user) {
+        // Fetch the user
+        user =
+          getUserFromMention(argv.message.client, argv.user) ??
+          getUserFromTag(argv.message.client, argv.user);
+      } else {
+        user = argv.message.author;
+      }
       let member;
       if (user) {
         member = argv.message.guild.member(user);
       } else {
-        member = argv.message.member;
-        user = argv.message.author;
+        return argv.message.reply("That user doesn't exist");
       }
       if (member) {
         const reply = new MessageEmbed();
@@ -57,7 +68,13 @@ module.exports = {
         reply.addField("Bot", user.bot ? "Yes" : "No", true);
         if (member.voice.channel)
           reply.addField("In Voice Channel", member.voice.channel, true);
-        reply.addField("Id", member.id, true);
+
+        // Debug only info
+        if (argv.config.debug) {
+          reply.addField("Id", member.id, true);
+          reply.addField("bannable", member.bannable ? "Yes" : "No", true);
+          reply.addField("Kickable", member.kickable ? "Yes" : "No", true);
+        }
 
         argv.message.reply(reply);
       } else argv.message.reply("That user isn't a member of this server");
