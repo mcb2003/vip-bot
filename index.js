@@ -60,7 +60,7 @@ yargs.command('version', "Get the bot's version", {}, (argv) => {
 });
 
 client.once('ready',
-            () => { console.info(`Logged in as ${client.user.username}`); });
+            () => { console.info(`Logged in as @${client.user.tag}`); });
 
 client.on('message', message => {
   // Ignore messages from bots or not directed at us
