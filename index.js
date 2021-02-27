@@ -31,8 +31,11 @@ const Yargs = require("yargs");
 const client = new Discord.Client();
 const yargs = new Yargs()
                   .fail(false)
-                  .scriptName(config.prefix)
                   .version(false)
+                  .help()
+                  .recommendCommands()
+                  .scriptName(config.prefix)
+                  .scriptName(config.prefix)
                   .epilogue(`Report bugs at ${bugs.url}`);
 
 // Load commands:
