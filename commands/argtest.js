@@ -22,19 +22,19 @@
    IN THE SOFTWARE.
 */
 
-const {MessageEmbed} = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 
 module.exports = {
-  command : 'argtest',
-  describe : 'Display passed arguments.',
-  builder : {},
+  command: "argtest",
+  describe: "Display passed arguments.",
+  disabled: true,
+  builder: {},
   handler(argv) {
     let reply = new MessageEmbed();
     reply.setTitle("Passed Arguments");
     for (const k in argv) {
-      if (k == '$0' || k == 'message' || k == 'config')
-        continue;
-      if (k == '_') {
+      if (k == "$0" || k == "message" || k == "config") continue;
+      if (k == "_") {
         if (!argv[k].length) {
           // No positional arguments
           continue;
@@ -43,11 +43,11 @@ module.exports = {
         for (const v of argv[k]) {
           val += `• ${v}\n`;
         }
-        reply.addField(`Positional Arguments (${argv['_'].length})`, val);
+        reply.addField(`Positional Arguments (${argv["_"].length})`, val);
       } else {
         reply.addField(k, argv[k], true);
       }
     }
     return argv.message.reply(reply);
-  }
+  },
 };
