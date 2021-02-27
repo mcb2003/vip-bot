@@ -29,7 +29,7 @@ const Yargs = require("yargs");
 
 const client = new Discord.Client();
 const yargs = new Yargs();
-yargs.scriptName("VIP Bot");
+yargs.scriptName(config.prefix).version(false);
 
 // Load commands:
 console.info("Loading commands");
@@ -39,6 +39,14 @@ yargs.commandDir("commands", {
     console.info(`Found command: ${cmd.command} - ${cmd.describe} in ${path}`);
     return cmd;
   },
+});
+
+// The default command (handles command not found)
+yargs.command('*', false, {}, (argv) => {
+  // Handle command not found
+  if (config.replyCNF && argv._.length > 0)
+    return argv.message.reply(`${argv._[0]}: command not found`);
+  // Don't do anything else, so no output is generated
 });
 
 client.once('ready',
@@ -52,6 +60,7 @@ client.on('message', message => {
   return yargs.parse(
       rawArgs, {
         message,
+        config,
       },
       (err, argv, output) => {
         if (output)
