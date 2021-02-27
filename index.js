@@ -22,14 +22,18 @@
    IN THE SOFTWARE.
 */
 
-const {name, version} = require("./package.json");
+const {name, version, bugs} = require("./package.json");
 const fs = require('fs');
 const Discord = require('discord.js');
 const config = require('./config'); // Bot config
 const Yargs = require("yargs");
 
 const client = new Discord.Client();
-const yargs = new Yargs().fail(false).scriptName(config.prefix).version(false);
+const yargs = new Yargs()
+                  .fail(false)
+                  .scriptName(config.prefix)
+                  .version(false)
+                  .epilogue(`Report bugs at ${bugs.url}`);
 
 // Load commands:
 console.info("Loading commands");
