@@ -29,8 +29,7 @@ const config = require('./config'); // Bot config
 const Yargs = require("yargs");
 
 const client = new Discord.Client();
-const yargs = new Yargs();
-yargs.scriptName(config.prefix).version(false);
+const yargs = new Yargs().fail(false).scriptName(config.prefix).version(false);
 
 // Load commands:
 console.info("Loading commands");
@@ -59,30 +58,42 @@ yargs.command('version', "Get the bot's version", {}, (argv) => {
   return argv.message.channel.send(`${name} version ${version}`);
 });
 
+// The error handler
+function handleError(err, msg) {
+  console.error(`Error in command: ${msg.content}`)
+  console.error(err);
+  return msg.reply(config.debug ? `Error:\n${err}`
+                                : "Sorry, that command encountered an error.");
+}
+
 client.once('ready',
             () => { console.info(`Logged in as @${client.user.tag}`); });
 
-client.on('message', message => {
+client.on('message', async (message) => {
   // Ignore messages from bots or not directed at us
   if (!message.content.startsWith(config.prefix) || message.author.bot)
     return;
+
   const rawArgs = message.content.slice(config.prefix.length);
-  return yargs.parse(
-      rawArgs, {
-        message,
-        config,
-      },
-      (err, argv, output) => {
-        if (output)
-          argv.message.channel.send(output);
-        if (err) {
-          console.error(`Error in command: ${argv.message.content}`)
-          console.error(err);
-          return message.reply(
-              config.debug ? `Error:\n${err}`
-                           : "Sorry, that command encountered an error.");
-        }
-      });
+
+  try {
+    // Execute the command
+    await yargs.parse(rawArgs, {
+      message,
+      config,
+    },
+                      (err, argv, output) => {
+                        if (output)
+                          // Yargs has output for the user (probably help or an
+                          // argument error)
+                          argv.message.channel.send(output);
+                        if (err) {
+                          handleError(err, message)
+                        }
+                      });
+  } catch (e) {
+    console.error(e);
+  }
 });
 
 client.login(config.token);
