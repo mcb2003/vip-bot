@@ -23,32 +23,31 @@
 */
 
 const {MessageEmbed} = require("discord.js");
-const {Command} = require('../command');
 
-module.exports = class extends Command {
-  name = 'argtest';
-  description = 'Display passed arguments.';
-  usage = '<your arguments here>';
-  help =
-      "Provide this command with any arguments you wish, and it will return the parsed representation of your arguments.";
-  async execute(message, args) {
+module.exports = {
+  command : 'argtest',
+  describe : 'Display passed arguments.',
+  builder : {},
+  handler(argv) {
     let reply = new MessageEmbed();
     reply.setTitle("Passed Arguments");
-    for (const k in args) {
+    for (const k in argv) {
+      if (k == '$0' || k == 'message')
+        continue;
       if (k == '_') {
-        if (!args[k].length) {
+        if (!argv[k].length) {
           // No positional arguments
           continue;
         }
         let val = "";
-        for (const v of args[k]) {
+        for (const v of argv[k]) {
           val += `• ${v}\n`;
         }
         reply.addField("Positional Arguments", val);
       } else {
-        reply.addField(k, args[k], true);
+        reply.addField(k, argv[k], true);
       }
     }
-    return message.reply(reply);
+    return argv.message.reply(reply);
   }
 };

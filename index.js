@@ -25,31 +25,21 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const config = require('./config'); // Bot config
+const Yargs = require("yargs");
 
 const client = new Discord.Client();
-
-// Default command argument config.
-const defaultArgConfig = {
-  configuration : {
-    'strip-aliased' : true,
-    'strip-dashed' : true,
-  },
-  alias : {help : [ 'h' ]},
-  boolean : [ 'help' ]
-};
+const yargs = new Yargs();
+yargs.scriptName("VIP Bot");
 
 // Load commands:
 console.info("Loading commands");
-client.commands = new Discord.Collection();
-const commandFiles =
-    fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-for (const file of commandFiles) {
-  console.info(`Found command file: ${file}`);
-  const CommandClass = require('./commands/' + file);
-  const command = new CommandClass(config, defaultArgConfig);
-  client.commands.set(command.name.toLowerCase(), command);
-  console.info(`Loaded command: ${command.name} - ${command.description}`);
-}
+yargs.commandDir("commands", {
+  recurse : true,
+  visit(cmd, path) {
+    console.info(`Found command: ${cmd.command} - ${cmd.describe} in ${path}`);
+    return cmd;
+  },
+});
 
 client.once('ready',
             () => { console.info(`Logged in as ${client.user.username}`); });
@@ -58,19 +48,14 @@ client.on('message', message => {
   // Ignore messages from bots or not directed at us
   if (!message.content.startsWith(config.prefix) || message.author.bot)
     return;
-  const rawArgs = message.content.slice(config.prefix.length)
-                      .split(/[ \t\n]+/); // Might add quoting rules later
-  const commandName = rawArgs.shift().toLowerCase();
-  if (client.commands.has(commandName)) {
-    const command = client.commands.get(commandName);
-    return command.run(message, rawArgs).then(ret => ret).catch(e => {
-      console.error(e);
-      return message.reply("Sorry, that command encountered an error:");
-    });
-  } else if (config.replyCNF) { // reply on command not found
-    return message.reply(`That command doesn't exist. Type "${
-        config.prefix}help" to get a list of commands.`);
-  }
+  const rawArgs = message.content.slice(config.prefix.length);
+  return yargs.parse(rawArgs, {
+    message,
+  },
+                     (err, argv, output) => {
+                       if (output)
+                         return argv.message.channel.send(output);
+                     });
 });
 
 client.login(config.token);

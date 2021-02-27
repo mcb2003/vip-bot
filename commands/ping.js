@@ -22,10 +22,9 @@
    IN THE SOFTWARE.
 */
 
-const {Command} = require('../command');
-
-module.exports = class extends Command {
-  name = 'ping';
-  description = 'A test command.';
-  async execute(message) { return message.reply('Pong!'); }
+module.exports = {
+  command : 'ping',
+  describe : 'A test command.',
+  builder : {},
+  handler(argv) { return argv.message.reply('Pong!'); }
 };
