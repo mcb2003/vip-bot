@@ -23,6 +23,7 @@
 */
 
 const { MessageEmbed } = require("discord.js");
+const { makeHandler } = require("../helpers");
 
 module.exports = {
   command: "userinfo [user]",
@@ -33,31 +34,36 @@ module.exports = {
       describe: "The user to retrieve information about (you by default)",
     });
   },
-  handler(argv) {
-    let user = argv.message.mentions.users.first();
-    let member;
-    if (user) {
-      member = argv.message.guild.member(user);
-    } else {
-      member = argv.message.member;
-      user = argv.message.author;
-    }
-    if (member) {
-      const reply = new MessageEmbed();
-      reply.setTitle(`${user.tag} (${member.presence.status})`);
-      reply.setColor(member.displayColor);
-      reply.setThumbnail(user.displayAvatarURL());
-      if (member.nickname) reply.addField("Nickname", member.nickname, true);
-      reply.addField("Joined Discord", user.createdAt, true);
-      reply.addField("Joined This Server", member.joinedAt, true);
-      if (member.premiumSince)
-        reply.addField("Boosted this server", member.premiumSince, true);
-      reply.addField("Bot", user.bot ? "Yes" : "No", true);
-      if (member.voice.channel)
-        reply.addField("In Voice Channel", member.voice.channel, true);
-      reply.addField("Id", member.id, true);
+  handler: makeHandler(
+    (argv) => {
+      let user = argv.message.mentions.users.first();
+      let member;
+      if (user) {
+        member = argv.message.guild.member(user);
+      } else {
+        member = argv.message.member;
+        user = argv.message.author;
+      }
+      if (member) {
+        const reply = new MessageEmbed();
+        reply.setTitle(`${user.tag} (${member.presence.status})`);
+        reply.setColor(member.displayColor);
+        reply.setThumbnail(user.displayAvatarURL());
+        if (member.nickname) reply.addField("Nickname", member.nickname, true);
+        reply.addField("Joined Discord", user.createdAt, true);
+        reply.addField("Joined This Server", member.joinedAt, true);
+        if (member.premiumSince)
+          reply.addField("Boosted this server", member.premiumSince, true);
+        reply.addField("Bot", user.bot ? "Yes" : "No", true);
+        if (member.voice.channel)
+          reply.addField("In Voice Channel", member.voice.channel, true);
+        reply.addField("Id", member.id, true);
 
-      argv.message.reply(reply);
-    } else argv.message.reply("That user isn't a member of this server");
-  },
+        argv.message.reply(reply);
+      } else argv.message.reply("That user isn't a member of this server");
+    },
+    {
+      serverOnly: true,
+    }
+  ),
 };
