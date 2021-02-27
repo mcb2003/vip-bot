@@ -22,6 +22,7 @@
    IN THE SOFTWARE.
 */
 
+const {MessageEmbed} = require("discord.js");
 const yargsParser = require('yargs-parser');
 const deepmerge = require('deepmerge');
 
@@ -43,7 +44,7 @@ module.exports = {
       const args = yargsParser(rawArgs, this.argConfig);
       // If the user wants help, display it
       if (args.help) {
-        return message.channel.send(this.helpString);
+        return message.channel.send(this.getHelp());
       }
       // Check for and inforce positional argument requirements
       if (this.nPosArgs && this.nPosArgs !== args._.length) {
@@ -51,27 +52,29 @@ module.exports = {
             this.nPosArgs} positional arguments (${args._.length} given).
                     \n${this.usageString}`);
       }
-      // Future checking (E.G. guild only, user / channel perms, cool-down, etc)
+      // Future checking (E.G. user / channel perms, cool-down, etc)
       return await this.execute(message, args);
     }
 
     get usageString() {
       // If no usage, the space is trimmed
-      return `**Usage:** ${this.globalConfig.prefix}${
-                 this.name.toLowerCase()} ${this.usage}`
+      return `${this.globalConfig.prefix}${this.name.toLowerCase()} ${
+                 this.usage}`
           .trim();
     }
 
-    get helpString() {
-      let helpText = `**${this.name}:** ${this.description}
-            \n${this.usageString}`;
+    getHelp() {
+      let help = new MessageEmbed();
+      help.setTitle(`Help for ${this.globalConfig.prefix + this.name}`);
+      help.addField("Name", `${this.name} - ${this.description}`);
+      help.addField("Synopsis", this.usageString, true);
       if (this.help) {
-        helpText += '\n' + this.help;
+        help.addField("Description", this.help);
       } else {
-        helpText +=
-            "\nThis command doesn't provide any further help documentation.";
+        help.setFooter(
+            "This command doesn't provide any further help documentation.");
       }
-      return helpText;
+      return help;
     }
   }
 };
