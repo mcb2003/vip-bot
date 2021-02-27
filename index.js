@@ -37,6 +37,10 @@ yargs.commandDir("commands", {
   recurse : true,
   visit(cmd, path) {
     console.info(`Found command: ${cmd.command} - ${cmd.describe} in ${path}`);
+    if (cmd.disabled) {
+      console.info(`${cmd.command} is disabled, not loading it`);
+      return null;
+    }
     return cmd;
   },
 });
