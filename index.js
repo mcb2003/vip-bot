@@ -49,13 +49,21 @@ client.on('message', message => {
   if (!message.content.startsWith(config.prefix) || message.author.bot)
     return;
   const rawArgs = message.content.slice(config.prefix.length);
-  return yargs.parse(rawArgs, {
-    message,
-  },
-                     (err, argv, output) => {
-                       if (output)
-                         return argv.message.channel.send(output);
-                     });
+  return yargs.parse(
+      rawArgs, {
+        message,
+      },
+      (err, argv, output) => {
+        if (output)
+          argv.message.channel.send(output);
+        if (err) {
+          console.error(`Error in command: ${argv.message.content}`)
+          console.error(err);
+          return message.reply(
+              config.debug ? `Error:\n${err}`
+                           : "Sorry, that command encountered an error.");
+        }
+      });
 });
 
 client.login(config.token);

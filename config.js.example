@@ -23,6 +23,7 @@
 */
 
 module.exports = {
+debug: false, // Send errors to discord.
     prefix: '!',
     replyCNF: false, // Reply on command not found?
     token: 'your-token-here'
