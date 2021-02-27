@@ -22,6 +22,7 @@
    IN THE SOFTWARE.
 */
 
+const {name, version} = require("./package.json");
 const fs = require('fs');
 const Discord = require('discord.js');
 const config = require('./config'); // Bot config
@@ -51,6 +52,11 @@ yargs.command('*', false, {}, (argv) => {
   if (config.replyCNF && argv._.length > 0)
     return argv.message.reply(`${argv._[0]}: command not found`);
   // Don't do anything else, so no output is generated
+});
+
+// Version command
+yargs.command('version', "Get the bot's version", {}, (argv) => {
+  return argv.message.channel.send(`${name} version ${version}`);
 });
 
 client.once('ready',
