@@ -22,6 +22,7 @@
    IN THE SOFTWARE.
 */
 
+const {MessageEmbed} = require("discord.js");
 const {Command} = require('../command');
 
 module.exports = class extends Command {
@@ -31,9 +32,22 @@ module.exports = class extends Command {
   help =
       "Provide this command with any arguments you wish, and it will return the parsed representation of your arguments.";
   async execute(message, args) {
-    let reply = "**Passed Arguments:**\n";
-    for (let k in args) {
-      reply += `\n**${k}:**\t${args[k]}`;
+    let reply = new MessageEmbed();
+    reply.setTitle("Passed Arguments");
+    for (const k in args) {
+      if (k == '_') {
+        if (!args[k].length) {
+          // No positional arguments
+          continue;
+        }
+        let val = "";
+        for (const v of args[k]) {
+          val += `• ${v}\n`;
+        }
+        reply.addField("Positional Arguments", val);
+      } else {
+        reply.addField(k, args[k], true);
+      }
     }
     return message.reply(reply);
   }
