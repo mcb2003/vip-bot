@@ -32,7 +32,7 @@ module.exports = {
     let reply = new MessageEmbed();
     reply.setTitle("Passed Arguments");
     for (const k in argv) {
-      if (k == '$0' || k == 'message')
+      if (k == '$0' || k == 'message' || k == 'config')
         continue;
       if (k == '_') {
         if (!argv[k].length) {
