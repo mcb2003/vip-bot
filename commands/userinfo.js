@@ -46,15 +46,7 @@ module.exports = {
   },
   handler: makeHandler(
     (argv) => {
-      let user;
-      if (argv.user) {
-        // Fetch the user
-        user =
-          getUserFromMention(argv.message.client, argv.user) ??
-          getUserFromTag(argv.message.client, argv.user);
-      } else {
-        user = argv.message.author;
-      }
+      let user = argv.user;
       let member;
       if (user) {
         member = argv.message.guild.member(user);
@@ -99,6 +91,8 @@ module.exports = {
     },
     {
       serverOnly: true,
+      users: ["user"],
+      defaultToSelf: true,
     }
   ),
 };

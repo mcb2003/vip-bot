@@ -35,9 +35,14 @@ exports.makeHandler = (handler, options) => {
   return (argv) => {
     if (options.serverOnly && !argv.message.guild)
       return argv.message.reply("That command is server-only.");
-    if (options.ids)
-      for (const arg of options.ids)
-        if (argv[arg]) argv[arg] = exports.id(argv[arg]);
+    if (options.users)
+      for (const arg of options.users)
+        if (argv[arg])
+          argv[arg] =
+            exports.getUserFromMention(argv.message.client, argv[arg]) ??
+            exports.getUserFromTag(argv.message.client, argv[arg]);
+        else if (options.defaultToSelf && !argv[arg])
+          argv[arg] = argv.message.author;
 
     return handler(argv);
   };
