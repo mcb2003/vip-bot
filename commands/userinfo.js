@@ -34,9 +34,15 @@ module.exports = {
   aliases: ["user", "memberinfo", "member"],
   describe: "Retrieve information about yourself or a specific Discord user",
   builder(yargs) {
-    return yargs.positional("user", {
-      describe: "The user to retrieve information about (you by default)",
-    });
+    return yargs
+      .positional("user", {
+        describe: "The user to retrieve information about (you by default)",
+      })
+      .option("v", {
+        alias: "verbose",
+        describe: "Show more / internal information",
+        type: "bool",
+      });
   },
   handler: makeHandler(
     (argv) => {
@@ -69,8 +75,8 @@ module.exports = {
         if (member.voice.channel)
           reply.addField("In Voice Channel", member.voice.channel, true);
 
-        // Debug only info
-        if (argv.config.debug) {
+        // Verbose info
+        if (argv.v) {
           reply.addField("Id", member.id, true);
           reply.addField("bannable", member.bannable ? "Yes" : "No", true);
           reply.addField("Kickable", member.kickable ? "Yes" : "No", true);
