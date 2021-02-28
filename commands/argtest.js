@@ -39,10 +39,7 @@ module.exports = {
           // No positional arguments
           continue;
         }
-        let val = "";
-        for (const v of argv[k]) {
-          val += `• ${v}\n`;
-        }
+        let val = "• " + argv[k].join("\n• ");
         reply.addField(`Positional Arguments (${argv["_"].length})`, val);
       } else {
         reply.addField(k, argv[k], true);
