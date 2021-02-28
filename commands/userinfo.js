@@ -80,6 +80,18 @@ module.exports = {
           reply.addField("Id", member.id, true);
           reply.addField("bannable", member.bannable ? "Yes" : "No", true);
           reply.addField("Kickable", member.kickable ? "Yes" : "No", true);
+          // User permissions
+          const perms = member.permissions
+            .toArray()
+            .map((p) =>
+              p
+                .toLowerCase()
+                .split("_")
+                .join(" ", true)
+                .replace("guild", "server")
+            )
+            .sort();
+          reply.addField("Permissions", "• " + perms.join("\n• "));
         }
 
         argv.message.reply(reply);

@@ -45,8 +45,5 @@ exports.getUserFromMention = (client, mention) => {
 
 exports.getUserFromTag = (client, tag) => {
   if (!client || !tag) return;
-  return client.users.cache.find((u) => {
-    console.log(u.tag);
-    return u.tag == tag;
-  });
+  return client.users.cache.find((u) => u.tag == tag);
 };
