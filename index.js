@@ -30,7 +30,6 @@ const Yargs = require("yargs");
 
 const client = new Discord.Client();
 const yargs = new Yargs()
-  .fail(false)
   .version(false)
   .help()
   .recommendCommands()
@@ -102,9 +101,8 @@ client.on("message", async (message) => {
           // Yargs has output for the user (probably help or an
           // argument error)
           argv.message.channel.send(output);
-        if (err) {
-          handleError(err, message);
-        }
+        // Only send errors to Discord if Yargs itself hasn't delivered the error
+        if (err && !output) handleError(err, message);
       }
     );
   } catch (e) {
