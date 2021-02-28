@@ -28,7 +28,11 @@ module.exports = {
   command: "argtest",
   describe: "Display passed arguments.",
   disabled: true,
-  builder: {},
+  builder(yargs) {
+    return yargs.example(
+      "$0argtest -s --long-option --value=something --spaced-value test posarg1 posarg2"
+    );
+  },
   handler(argv) {
     let reply = new MessageEmbed();
     reply.setTitle("Passed Arguments");

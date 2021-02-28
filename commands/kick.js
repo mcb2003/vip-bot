@@ -35,6 +35,8 @@ module.exports = {
   describe: "Kick a user from this server",
   builder(yargs) {
     return yargs
+      .example("$0kick @user")
+      .example('$0kick @user "Was rude to @victim"')
       .positional("user", {
         describe: "The user to kick",
       })

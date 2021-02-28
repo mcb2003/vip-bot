@@ -29,7 +29,9 @@ module.exports = {
   command: "serverinfo",
   aliases: ["server"],
   describe: "Retrieve information about this server",
-  builder: {},
+  builder(yargs) {
+    return yargs.example("$0serverinfo");
+  },
   handler: makeHandler(
     (argv) => {
       const guild = argv.message.guild;

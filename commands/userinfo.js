@@ -35,6 +35,8 @@ module.exports = {
   describe: "Retrieve information about yourself or a specific Discord user",
   builder(yargs) {
     return yargs
+      .example("$0userinfo")
+      .example("$0userinfo @user")
       .positional("user", {
         describe: "The user to retrieve information about (you by default)",
       })

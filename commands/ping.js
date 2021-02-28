@@ -23,8 +23,12 @@
 */
 
 module.exports = {
-  command : 'ping',
-  describe : 'A test command.',
-  builder : {},
-  handler(argv) { return argv.message.reply('Pong!'); }
+  command: "ping",
+  describe: "A test command.",
+  builder(yargs) {
+    return yargs.example("$0ping");
+  },
+  handler(argv) {
+    return argv.message.reply("Pong!");
+  },
 };
