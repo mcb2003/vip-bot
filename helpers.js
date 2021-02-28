@@ -22,6 +22,13 @@
    IN THE SOFTWARE.
 */
 
+// Get an id from a mention of any type
+exports.id = (id) => {
+  if (!id) return;
+  const matches = id.match(/^<(#|(@[!&]?))(\d+)>$/);
+  if (matches && matches.length >= 4) return matches[3];
+};
+
 // Wrap a command handler to deal with server-only commands, cooldown, perms,
 // etc.
 exports.makeHandler = (handler, options) => {
@@ -34,12 +41,7 @@ exports.makeHandler = (handler, options) => {
 
 exports.getUserFromMention = (client, mention) => {
   if (!client || !mention) return;
-  // The id is the first and only match found by the RegEx.
-  const matches = mention.match(/^<@!?(\d+)>$/);
-  if (!matches || matches.length < 2) return;
-  // The first element in the matches array is the entire mention
-  const id = matches[1];
-
+  const id = exports.id(mention);
   return client.users.cache.get(id);
 };
 
